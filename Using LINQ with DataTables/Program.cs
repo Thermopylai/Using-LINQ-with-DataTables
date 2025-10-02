@@ -18,20 +18,39 @@ namespace Using_LINQ_with_DataTables
             employees.Rows.Add(9, "Ivy", 33, "HR", 63000);
             employees.Rows.Add(10, "Jack", 26, "IT", 71000);
 
-            // Query to select employees from the IT department
-            // and order them by salary in descending order
             Console.WriteLine("Employees in IT Department ordered by Salary (Descending):");
-            var query = from emp in employees.AsEnumerable() // Use AsEnumerable() to work with LINQ to DataSet
-                        where emp.Field<string>("Department") == "IT" // Filter employees where Department is "IT"
-                        orderby emp.Field<decimal>("Salary") descending // Order by Salary in descending order
-                        select new // Select a new anonymous object with relevant fields
+
+            // Query to select employees from the IT department
+            // and order them by salary in descending order.
+            // Use AsEnumerable() to work with LINQ to DataSet.
+            // AsEnumerable creates an enumerable collection of DataRow
+            // which allows LINQ operations.
+            // Use Field<T> to access the column values in a type-safe manner.
+            // This avoids the need for casting and potential runtime errors.
+
+            var query = from emp in employees.AsEnumerable() // Convert DataTable to Enumerable of DataRow
+                        where emp.Field<string>("Department") == "IT" // Filter employees where Department is "IT".
+                        orderby emp.Field<decimal>("Salary") descending // Order by Salary in descending order.
+                        select new // Select a new anonymous object with relevant fields.
+
+                        // Create an anonymous type to hold the selected fields.
+                        // This helps in projecting only the necessary data
+                        // and makes it easier to work with the results.
+                        // Each property corresponds to a column in the DataTable.
+                        // Use object initializer syntax to set the properties.
+                        // This creates a new object for each row in the result set.
+                        // The properties are strongly typed based on the column data types.
+                        // This improves code readability and maintainability.
+                        // The selected fields are Id, Name, Age, Department, and Salary.
                         {
+                            // Use Field<T> to get the value of the specified column.    
                             Id = emp.Field<int>("Id"),
                             Name = emp.Field<string>("Name"),
                             Age = emp.Field<int>("Age"),
                             Department = emp.Field<string>("Department"),
                             Salary = emp.Field<decimal>("Salary")
                         };
+
             // Display the results
             foreach (var emp in query)
             {
@@ -41,6 +60,7 @@ namespace Using_LINQ_with_DataTables
             Console.ReadKey();
         }
     }
+
     // Define a strongly-typed DataTable for Employees
     // This is optional but helps with clarity and type safety
     // You can also use a regular DataTable and define columns dynamically
